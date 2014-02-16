@@ -9,8 +9,11 @@
 #import "ViewController.h"
 #import "YSSliderBar.h"
 
+#define TAG_SEGMENTPLACEMENT 1
+#define TAG_SEGMENTSTYLE 2
+#define MARGIN 10
 @interface ViewController () <YSSliderBarDelegate>
-@property (nonatomic, retain) YSSliderBar *SliderBar;
+@property (nonatomic, retain) YSSliderBar *sliderBar;
 @property (nonatomic, retain) UILabel *feedback;
 @end
 
@@ -22,30 +25,26 @@
 	// Do any additional setup after loading the view, typically from a nib.
     CGRect frame = [self.view bounds];
     
-    CGFloat margin = 10;
-    
     YSSliderBar *ab = [[YSSliderBar alloc] initWithFrame:CGRectMake(10, 20, 250, 50)];
     self.sliderBar = ab;
 #ifdef TRACE
     [ab setBackgroundColor:[UIColor orangeColor]];
 #endif
-    [ab setIndicatorPlacement:IndicatorPlacementBottom]; // test after setting items
     [ab setItems:@[@"test1", @"test2", @"test3", @"testing one two", @"alex was here", @"'sup", @"dudes"]];
+    [ab setTextColor:[UIColor darkGrayColor]];
     [ab setIndicatorColor:[UIColor grayColor]];
     [ab setDelegate:self];
     [self.view addSubview:ab];
     
-    UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(margin, 100, frame.size.width-(margin*2), 100)];
+    UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(MARGIN, 250, frame.size.width-(MARGIN*2), 100)];
     [l setTextAlignment:NSTextAlignmentCenter];
     [l setFont:[UIFont systemFontOfSize:32.0f]];
     self.feedback = l;
     [self.view addSubview:self.feedback];
     
-    UISegmentedControl *sc = [[UISegmentedControl alloc] initWithItems:@[@"Top", @"Bottom", @"Left", @"Right", @"Behind"]];
-    [sc addTarget:self action:@selector(changedSegment:) forControlEvents:UIControlEventValueChanged];
-    [sc setFrame:CGRectMake(margin, margin+self.SliderBar.frame.size.height+self.SliderBar.frame.origin.y, sc.frame.size.width, sc.frame.size.height)];
-    [sc setSelectedSegmentIndex:1];
-    [self.view addSubview:sc];
+    [self addSegmentControlWithElements:@[@"Default", @"^", @"v", @"<", @">", @"Behind"] atTop:100 withTag:TAG_SEGMENTPLACEMENT];
+    
+    [self addSegmentControlWithElements:@[@"Default", @"Bar", @"Spot"] atTop:150 withTag:TAG_SEGMENTSTYLE];
 }
 
 - (void)didReceiveMemoryWarning
@@ -53,30 +52,26 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+- (void) addSegmentControlWithElements:(NSArray *) array atTop:(int) top withTag:(int) tag {
+    CGRect frame = [self.view bounds];
+
+    UISegmentedControl *sc = [[UISegmentedControl alloc] initWithItems:array];
+    [sc addTarget:self action:@selector(changedSegment:) forControlEvents:UIControlEventValueChanged];
+    [sc setFrame:CGRectMake(MARGIN, top, frame.size.width-(MARGIN*2), sc.frame.size.height)];
+    [sc setSelectedSegmentIndex:0];
+    [sc setTag:tag];
+    [self.view addSubview:sc];
+}
+
 #pragma mark - Seg
 - (void) changedSegment:(id) sender {
     NSLog(@"sender is %@", sender);
     UISegmentedControl *sc = (UISegmentedControl *) sender;
-    switch (sc.selectedSegmentIndex) {
-        case 0:
-            [self.SliderBar setIndicatorPlacement:IndicatorPlacementTop];
-            break;
-        case 1:
-            [self.SliderBar setIndicatorPlacement:IndicatorPlacementBottom];
-            break;
-        case 2:
-            [self.SliderBar setIndicatorPlacement:IndicatorPlacementLeft];
-            break;
-        case 3:
-            [self.SliderBar setIndicatorPlacement:IndicatorPlacementRight];
-            break;
-        case 4:
-            [self.SliderBar setIndicatorPlacement:IndicatorPlacementBehind];
-            break;
-        default:
-            break;
-    }
-    
+    if (sc.tag == TAG_SEGMENTPLACEMENT)
+        [self.sliderBar setIndicatorPlacement:sc.selectedSegmentIndex];
+    if (sc.tag == TAG_SEGMENTSTYLE)
+        [self.sliderBar setIndicatorStyle:sc.selectedSegmentIndex];
 }
 
 #pragma mark - SliderBarDelegate

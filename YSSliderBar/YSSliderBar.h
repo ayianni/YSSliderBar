@@ -29,12 +29,19 @@
 #import <UIKit/UIKit.h>
 
 typedef enum {
+    IndicatorPlacementDefault,
     IndicatorPlacementTop,
     IndicatorPlacementBottom,
     IndicatorPlacementLeft,
     IndicatorPlacementRight,
     IndicatorPlacementBehind
 } IndicatorPlacement;
+
+typedef enum {
+    IndicatorStyleDefault,
+    IndicatorStyleBar,
+    IndicatorStyleSpot
+} IndicatorStyle;
 
 @protocol YSSliderBarDelegate <NSObject>
 
@@ -46,13 +53,17 @@ typedef enum {
 
 @interface YSSliderBar : UIView {
     IndicatorPlacement indicatorPlacement;
+    IndicatorStyle indicatorStyle;
     int selectedIndex;
     int itemCount;
     CGPoint startPoint;
+    UIColor *tColor;
 }
 @property (nonatomic, assign) id <YSSliderBarDelegate> delegate;
 @property (nonatomic, readonly) UIColor *indicatorColor;
 - (void) setItems:(NSArray *) items;
+- (void) setTextColor:(UIColor *) color;
 - (void) setIndicatorColor:(UIColor *) color;
 - (void) setIndicatorPlacement:(IndicatorPlacement) placement;
+- (void) setIndicatorStyle:(IndicatorStyle) style;
 @end

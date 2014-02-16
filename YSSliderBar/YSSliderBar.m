@@ -27,8 +27,10 @@
 //
 
 #import "YSSliderBar.h"
+#import <QuartzCore/QuartzCore.h>
 #define GAP 0
 #define TAG 10
+#define SPOTSIZE 6
 @interface YSSliderBar() {
 }
 @property (nonatomic, retain) UIView *indicator;
@@ -42,12 +44,17 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self setClipsToBounds:YES];
-        self.color = [UIColor redColor]; // default colour
+        indicatorStyle = IndicatorStyleDefault;
+        indicatorPlacement = IndicatorPlacementDefault;
+        self.color = [UIColor blackColor]; // default colour
+        tColor = [UIColor blackColor];
         // Initialization code
         UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
         [v setBackgroundColor:self.color];
         self.indicator = v;
 
+        [self setIndicatorPlacement:indicatorPlacement];
+        [self setIndicatorStyle:indicatorStyle];
         [self addSubview:self.indicator];
     }
     return self;
@@ -61,7 +68,7 @@
 
 #pragma mark - private
 - (CGFloat) indicatorHeight {
-    return 5;
+    return SPOTSIZE;
 }
 
 - (void) moveToItem {
@@ -113,27 +120,39 @@
         case IndicatorPlacementLeft:
         case IndicatorPlacementRight:
             size = CGSizeMake([self indicatorHeight], frame.size.height);
-            point = CGPointMake((indicatorPlacement == IndicatorPlacementLeft ? view.frame.origin.x : (view.frame.size.width+view.frame.origin.x)-[self indicatorHeight]), 0);
+            point = CGPointMake(indicatorPlacement == IndicatorPlacementLeft ? view.frame.origin.x + [self indicatorHeight] / 2 : view.frame.size.width+view.frame.origin.x - [self indicatorHeight]/2,
+                                 view.frame.size.height / 2);
             NSLog(@"width is %f, %@", view.frame.size.width, NSStringFromCGPoint(point));
             break;
         case IndicatorPlacementBottom:
         case IndicatorPlacementTop:
             size = CGSizeMake(view.frame.size.width, [self indicatorHeight]);
-            point = CGPointMake(view.frame.origin.x,                                        indicatorPlacement == IndicatorPlacementTop ? 0
-                                : frame.size.height - [self indicatorHeight]);
+            point = CGPointMake((view.frame.size.width/2)+view.frame.origin.x,
+                                indicatorPlacement == IndicatorPlacementTop ? [self indicatorHeight] / 2
+                                : frame.size.height - ([self indicatorHeight] / 2));
             break;
         case IndicatorPlacementBehind:
-            point = view.frame.origin;
+            point = view.center;
             size = CGSizeMake(view.frame.size.width, view.frame.size.height);
             break;
         default:
             break;
     }
 
-    [self.indicator setFrame:CGRectMake(point.x,
-                                        point.y,
-                                        size.width,
-                                        size.height)];
+    // override the sizing for spot
+    switch (indicatorStyle) {
+        case IndicatorStyleSpot:
+            size = CGSizeMake(SPOTSIZE, SPOTSIZE);
+            break;
+            
+        default:
+            break;
+    }
+    
+    CGRect indframe = self.indicator.frame;
+    indframe.size = size;
+    self.indicator.frame = indframe;
+    [self.indicator setCenter:point];
     //NSLog(@"frame is %@ for selectedIndex=%d", NSStringFromCGRect(self.indicator.frame), selectedIndex);
 }
 
@@ -189,8 +208,8 @@
 
 #pragma mark - public 
 - (void) setIndicatorPlacement:(IndicatorPlacement) placement {
-    indicatorPlacement = placement;
-    
+    indicatorPlacement = placement == IndicatorPlacementDefault ? IndicatorPlacementTop : placement;
+
     if (indicatorPlacement == IndicatorPlacementTop || indicatorPlacement == IndicatorPlacementBottom) {
         CGFloat top = indicatorPlacement == IndicatorPlacementTop ? [self indicatorHeight] : 0;
 
@@ -214,6 +233,30 @@
 
 }
 
+- (void) setIndicatorStyle:(IndicatorStyle) style {
+    indicatorStyle = style == IndicatorStyleDefault ? IndicatorStyleBar : style;
+ 
+    switch (indicatorStyle) {
+        case IndicatorStyleSpot:
+            self.indicator.layer.cornerRadius = SPOTSIZE/2;
+            break;
+            
+        default:
+            self.indicator.layer.cornerRadius = 0;
+            break;
+    }
+
+    [self updateIndicator];
+}
+
+- (void) setTextColor:(UIColor *)color {
+    tColor = color;
+    for (int i = 0; i < [self items]; i++) {
+        UILabel *v = (UILabel *) [self viewWithTag:TAG+i];
+        [v setTextColor:tColor];
+    }
+}
+
 - (void) setIndicatorColor:(UIColor *)color {
     self.color = color;
     [self.indicator setBackgroundColor:self.color];
@@ -232,6 +275,7 @@
         [l setText:item];
         [l setBackgroundColor:[UIColor clearColor]];
         [l sizeToFit];
+        [l setTextColor:tColor];
         [l setTextAlignment:NSTextAlignmentCenter];
         [l setUserInteractionEnabled:YES]; // needed for tap gesture
 #ifdef TRACE
