@@ -43,6 +43,12 @@ typedef enum {
     IndicatorStyleSpot
 } IndicatorStyle;
 
+typedef enum {
+    IndicatorAlignmentDefault,
+    IndicatorAlignmentFollow,
+    IndicatorAlignmentCentered
+} IndicatorAlignment;
+
 @protocol YSSliderBarDelegate <NSObject>
 
 @optional
@@ -54,16 +60,21 @@ typedef enum {
 @interface YSSliderBar : UIView {
     IndicatorPlacement indicatorPlacement;
     IndicatorStyle indicatorStyle;
+    IndicatorAlignment indicatorAlignment;
     int selectedIndex;
     int itemCount;
     CGPoint startPoint;
     UIColor *tColor;
+    UIColor *htColor;
 }
 @property (nonatomic, assign) id <YSSliderBarDelegate> delegate;
 @property (nonatomic, readonly) UIColor *indicatorColor;
 - (void) setItems:(NSArray *) items;
 - (void) setTextColor:(UIColor *) color;
+- (void) setHighlightedTextColor:(UIColor *) color;
 - (void) setIndicatorColor:(UIColor *) color;
 - (void) setIndicatorPlacement:(IndicatorPlacement) placement;
 - (void) setIndicatorStyle:(IndicatorStyle) style;
+- (void) setIndicatorAlignment:(IndicatorAlignment) alignment;
+- (void) enablePanForView:(UIView *) view;
 @end

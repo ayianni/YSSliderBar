@@ -11,6 +11,7 @@
 
 #define TAG_SEGMENTPLACEMENT 1
 #define TAG_SEGMENTSTYLE 2
+#define TAG_SEGMENTALIGNMENT 3
 #define MARGIN 10
 @interface ViewController () <YSSliderBarDelegate>
 @property (nonatomic, retain) YSSliderBar *sliderBar;
@@ -25,10 +26,11 @@
 	// Do any additional setup after loading the view, typically from a nib.
     CGRect frame = [self.view bounds];
     
-    YSSliderBar *ab = [[YSSliderBar alloc] initWithFrame:CGRectMake(10, 20, 250, 50)];
+    YSSliderBar *ab = [[YSSliderBar alloc] initWithFrame:CGRectMake(10, 20, 250, 40)];
     self.sliderBar = ab;
-#ifdef TRACE
+    [ab enablePanForView:self.view];
     [ab setBackgroundColor:[UIColor orangeColor]];
+#ifdef TRACE
 #endif
     [ab setItems:@[@"test1", @"test2", @"test3", @"testing one two", @"alex was here", @"'sup", @"dudes"]];
     [ab setTextColor:[UIColor darkGrayColor]];
@@ -43,8 +45,8 @@
     [self.view addSubview:self.feedback];
     
     [self addSegmentControlWithElements:@[@"Default", @"^", @"v", @"<", @">", @"Behind"] atTop:100 withTag:TAG_SEGMENTPLACEMENT];
-    
     [self addSegmentControlWithElements:@[@"Default", @"Bar", @"Spot"] atTop:150 withTag:TAG_SEGMENTSTYLE];
+    [self addSegmentControlWithElements:@[@"Default", @"Follow", @"Centered"] atTop:200 withTag:TAG_SEGMENTALIGNMENT];
 }
 
 - (void)didReceiveMemoryWarning
@@ -69,9 +71,11 @@
     NSLog(@"sender is %@", sender);
     UISegmentedControl *sc = (UISegmentedControl *) sender;
     if (sc.tag == TAG_SEGMENTPLACEMENT)
-        [self.sliderBar setIndicatorPlacement:sc.selectedSegmentIndex];
+        [self.sliderBar setIndicatorPlacement:(int)sc.selectedSegmentIndex];
     if (sc.tag == TAG_SEGMENTSTYLE)
-        [self.sliderBar setIndicatorStyle:sc.selectedSegmentIndex];
+        [self.sliderBar setIndicatorStyle:(int)sc.selectedSegmentIndex];
+    if (sc.tag == TAG_SEGMENTALIGNMENT)
+        [self.sliderBar setIndicatorAlignment:(int) sc.selectedSegmentIndex];
 }
 
 #pragma mark - SliderBarDelegate

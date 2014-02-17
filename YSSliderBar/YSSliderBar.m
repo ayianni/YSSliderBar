@@ -46,8 +46,10 @@
         [self setClipsToBounds:YES];
         indicatorStyle = IndicatorStyleDefault;
         indicatorPlacement = IndicatorPlacementDefault;
+
         self.color = [UIColor blackColor]; // default colour
         tColor = [UIColor blackColor];
+        htColor = [UIColor redColor];
         // Initialization code
         UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
         [v setBackgroundColor:self.color];
@@ -55,6 +57,7 @@
 
         [self setIndicatorPlacement:indicatorPlacement];
         [self setIndicatorStyle:indicatorStyle];
+        [self setIndicatorAlignment:IndicatorAlignmentDefault];
         [self addSubview:self.indicator];
     }
     return self;
@@ -75,32 +78,54 @@
     CGRect frame = [self bounds];
     
     UIView *item = [self viewWithTag:TAG+selectedIndex];
-    if (item.frame.origin.x + item.frame.size.width > frame.size.width) {
-        //NSLog(@"OFF TO RIGHT");
-        // Off screen so move it on
-        [UIView animateWithDuration:0.3 animations:^{
-            CGFloat left = frame.size.width;
-            
-        for (int i = selectedIndex; i >= 0; i--) {
-            UIView *s = [self viewWithTag:TAG+i];
-            left -= s.frame.size.width + (i!=selectedIndex ? GAP : 0);
-            [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
-        }
-        }];
+    
+    if (indicatorAlignment == IndicatorAlignmentFollow) {
+        if (item.frame.origin.x + item.frame.size.width > frame.size.width) {
+            //NSLog(@"OFF TO RIGHT");
+            // Off screen so move it on
+            [UIView animateWithDuration:0.3 animations:^{
+                CGFloat left = frame.size.width;
+                
+            for (int i = selectedIndex; i >= 0; i--) {
+                UIView *s = [self viewWithTag:TAG+i];
+                left -= s.frame.size.width + (i!=selectedIndex ? GAP : 0);
+                [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
+            }
+            }];
 
+        }
+        else if (item.frame.origin.x <  0) {
+            // NSLog(@"OFF TO LEFT");
+            // off screen to left
+            [UIView animateWithDuration:0.3 animations:^{
+                CGFloat left = 0;
+                
+                for (int i = selectedIndex; i <= [self items] - 1; i++) {
+                    UIView *s = [self viewWithTag:TAG+i];
+                    [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
+                    left += s.frame.size.width + GAP;
+                }
+            }];
+        }
     }
-    else if (item.frame.origin.x <  0) {
-        // NSLog(@"OFF TO LEFT");
-        // off screen to left
+    else {
+//        item.center = CGPointMake(frame.size.width/2, frame.size.height/2);
         [UIView animateWithDuration:0.3 animations:^{
-            CGFloat left = 0;
+            CGFloat left = frame.size.width/2 - item.frame.size.width/2;
             
             for (int i = selectedIndex; i <= [self items] - 1; i++) {
                 UIView *s = [self viewWithTag:TAG+i];
                 [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
-                left += s.frame.size.width + GAP;
+                left += s.frame.size.width + (i!=selectedIndex ? GAP : 0);
+            }
+            left = frame.size.width/2 - item.frame.size.width/2;
+            for (int i = selectedIndex-1; i >=0; i--) {
+                UIView *s = [self viewWithTag:TAG+i];
+                left -= s.frame.size.width + (i!=selectedIndex ? GAP : 0);
+                [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
             }
         }];
+
     }
     
     [self updateIndicator];
@@ -113,7 +138,7 @@
 - (void) updateIndicator {
     CGRect frame = [self bounds];
 
-    UIView *view = [self viewWithTag:TAG+selectedIndex];
+    UILabel *view = (UILabel *)[self viewWithTag:TAG+selectedIndex];
     CGSize size = CGSizeZero;
     CGPoint point = CGPointZero;
     switch (indicatorPlacement) {
@@ -148,12 +173,18 @@
         default:
             break;
     }
-    
-    CGRect indframe = self.indicator.frame;
-    indframe.size = size;
-    self.indicator.frame = indframe;
-    [self.indicator setCenter:point];
-    //NSLog(@"frame is %@ for selectedIndex=%d", NSStringFromCGRect(self.indicator.frame), selectedIndex);
+
+
+    [UIView animateWithDuration:0.1 animations:^{
+        CGRect indframe = self.indicator.frame;
+        indframe.size = size;
+        indframe.origin.x = point.x - size.width/2;
+        indframe.origin.y = point.y - size.height/2;
+        self.indicator.frame = indframe;
+//        [self.indicator setCenter:point];
+        //NSLog(@"frame is %@ for selectedIndex=%d", NSStringFromCGRect(self.indicator.frame), selectedIndex);
+    }];
+//    [view setTextColor:htColor];
 }
 
 #pragma mark - Gestures
@@ -249,6 +280,11 @@
     [self updateIndicator];
 }
 
+- (void) setIndicatorAlignment:(IndicatorAlignment) alignment {
+    indicatorAlignment = alignment == IndicatorAlignmentDefault ? IndicatorAlignmentFollow : alignment;
+    [self moveToItem];
+}
+
 - (void) setTextColor:(UIColor *)color {
     tColor = color;
     for (int i = 0; i < [self items]; i++) {
@@ -257,6 +293,14 @@
     }
 }
 
+- (void) setHighlightedTextColor:(UIColor *) color {
+    htColor = color;
+    [self updateIndicator];
+//    UILabel *v = (UILabel *) [self viewWithTag:TAG+selectedIndex];
+//    if (v) {
+//        v setTextColor:<#(UIColor *)#>
+//    }
+}
 - (void) setIndicatorColor:(UIColor *)color {
     self.color = color;
     [self.indicator setBackgroundColor:self.color];
@@ -295,6 +339,11 @@
     [self addGestureRecognizer:pg];
     
     [self updateIndicator];
+}
+
+- (void) enablePanForView:(UIView *) view {
+    UIPanGestureRecognizer *pg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
+    [view addGestureRecognizer:pg];
 }
 
 @end
