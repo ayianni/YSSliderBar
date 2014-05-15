@@ -46,6 +46,7 @@
         [self setClipsToBounds:YES];
         indicatorStyle = IndicatorStyleDefault;
         indicatorPlacement = IndicatorPlacementDefault;
+        itemSizing = ItemSizingDefault;
 
         self.color = [UIColor blackColor]; // default colour
         tColor = [UIColor blackColor];
@@ -285,6 +286,11 @@
     [self moveToItem];
 }
 
+- (void) setItemSizing:(ItemSizing) sizing {
+    itemSizing = sizing == ItemSizingDefault ? ItemSizingToFit : sizing;
+    [self moveToItem];
+}
+
 - (void) setTextColor:(UIColor *)color {
     tColor = color;
     for (int i = 0; i < [self items]; i++) {
@@ -313,20 +319,25 @@
     int i = 0;
     CGRect frame = [self bounds];
     itemCount = (int)[items count];
+    CGFloat fixedWidth = frame.size.width / [items count];
     for (NSString *item in items) {
         UILabel *l = [[UILabel alloc] init];
         [l setTag:TAG+i];
         [l setText:item];
         [l setBackgroundColor:[UIColor clearColor]];
-        [l sizeToFit];
+        if (itemSizing != ItemSizingFixed)
+            [l sizeToFit];
         [l setTextColor:tColor];
         [l setTextAlignment:NSTextAlignmentCenter];
         [l setUserInteractionEnabled:YES]; // needed for tap gesture
 #ifdef TRACE
         [l setBackgroundColor:[UIColor purpleColor]];
 #endif
-        
-        [l setFrame:CGRectMake(left, top, l.frame.size.width+([self indicatorHeight]*2), frame.size.height - [self indicatorHeight])];
+        if (itemSizing == ItemSizingFixed) {
+            [l setFrame:CGRectMake(left, top, fixedWidth, frame.size.height - [self indicatorHeight])];
+        }
+        else
+            [l setFrame:CGRectMake(left, top, l.frame.size.width+([self indicatorHeight]*2), frame.size.height - [self indicatorHeight])];
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
         [l addGestureRecognizer:tap];

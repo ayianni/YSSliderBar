@@ -15,6 +15,7 @@
 #define MARGIN 10
 @interface ViewController () <YSSliderBarDelegate>
 @property (nonatomic, retain) YSSliderBar *sliderBar;
+@property (nonatomic, retain) YSSliderBar *sliderBarSmall;
 @property (nonatomic, retain) UILabel *feedback;
 @end
 
@@ -26,10 +27,19 @@
 	// Do any additional setup after loading the view, typically from a nib.
     CGRect frame = [self.view bounds];
     
-    YSSliderBar *ab = [[YSSliderBar alloc] initWithFrame:CGRectMake(10, 20, 250, 40)];
+    CGFloat margin = 10.f;
+    
+    YSSliderBar *ab = [[YSSliderBar alloc] initWithFrame:CGRectMake(margin, 20, 250, 40)];
     self.sliderBar = ab;
     [ab enablePanForView:self.view];
     [ab setBackgroundColor:[UIColor orangeColor]];
+
+    CGFloat top = ab.frame.size.height+ab.frame.origin.y;
+    YSSliderBar *abs = [[YSSliderBar alloc] initWithFrame:CGRectMake(margin, top+10, frame.size.width-(margin*2), 40)];
+    self.sliderBarSmall = abs;
+//    [abs enablePanForView:self.view];
+    [abs setBackgroundColor:[UIColor brownColor]];
+
 #ifdef TRACE
 #endif
     [ab setItems:@[@"test1", @"test2", @"test3", @"testing one two", @"alex was here", @"'sup", @"dudes"]];
@@ -38,15 +48,27 @@
     [ab setDelegate:self];
     [self.view addSubview:ab];
     
-    UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(MARGIN, 250, frame.size.width-(MARGIN*2), 100)];
+    [abs setDelegate:self];
+    [abs setIndicatorColor:[UIColor orangeColor]];
+//    [abs setIndicatorAlignment:IndicatorAlignmentToFit];
+    [abs setIndicatorAlignment:IndicatorAlignmentFollow];
+    [abs setTextColor:[UIColor whiteColor]];
+    [abs setItemSizing:ItemSizingFixed];
+    [abs setItems:@[@"item 1", @"item 2"]];
+    [self.view addSubview:abs];
+    
+    
+    UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(MARGIN, 250.f, frame.size.width-(MARGIN*2), 100)];
     [l setTextAlignment:NSTextAlignmentCenter];
     [l setFont:[UIFont systemFontOfSize:32.0f]];
     self.feedback = l;
     [self.view addSubview:self.feedback];
     
-    [self addSegmentControlWithElements:@[@"Default", @"^", @"v", @"<", @">", @"Behind"] atTop:100 withTag:TAG_SEGMENTPLACEMENT];
-    [self addSegmentControlWithElements:@[@"Default", @"Bar", @"Spot"] atTop:150 withTag:TAG_SEGMENTSTYLE];
-    [self addSegmentControlWithElements:@[@"Default", @"Follow", @"Centered"] atTop:200 withTag:TAG_SEGMENTALIGNMENT];
+    top = abs.frame.size.height+abs.frame.origin.y + 10;
+
+    [self addSegmentControlWithElements:@[@"Default", @"^", @"v", @"<", @">", @"Behind"] atTop:top withTag:TAG_SEGMENTPLACEMENT];
+    [self addSegmentControlWithElements:@[@"Default", @"Bar", @"Spot"] atTop:top+50 withTag:TAG_SEGMENTSTYLE];
+    [self addSegmentControlWithElements:@[@"Default", @"Follow", @"Centered"] atTop:top+100 withTag:TAG_SEGMENTALIGNMENT];
 }
 
 - (void)didReceiveMemoryWarning

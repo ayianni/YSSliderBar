@@ -49,6 +49,12 @@ typedef enum {
     IndicatorAlignmentCentered
 } IndicatorAlignment;
 
+typedef  enum {
+    ItemSizingDefault,
+    ItemSizingToFit,
+    ItemSizingFixed
+} ItemSizing;
+
 @protocol YSSliderBarDelegate <NSObject>
 
 @optional
@@ -61,6 +67,7 @@ typedef enum {
     IndicatorPlacement indicatorPlacement;
     IndicatorStyle indicatorStyle;
     IndicatorAlignment indicatorAlignment;
+    ItemSizing itemSizing;
     int selectedIndex;
     int itemCount;
     CGPoint startPoint;
@@ -76,5 +83,6 @@ typedef enum {
 - (void) setIndicatorPlacement:(IndicatorPlacement) placement;
 - (void) setIndicatorStyle:(IndicatorStyle) style;
 - (void) setIndicatorAlignment:(IndicatorAlignment) alignment;
+- (void) setItemSizing:(ItemSizing) sizing;
 - (void) enablePanForView:(UIView *) view;
 @end
