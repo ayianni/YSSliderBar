@@ -63,12 +63,12 @@ typedef  enum {
 
 @end
 
-@interface YSSliderBar : UIView {
+@interface YSSliderBar : UIControl {
     IndicatorPlacement indicatorPlacement;
     IndicatorStyle indicatorStyle;
     IndicatorAlignment indicatorAlignment;
     ItemSizing itemSizing;
-    int selectedIndex;
+//    int selectedIndex;
     int itemCount;
     CGPoint startPoint;
     UIColor *tColor;
@@ -76,6 +76,7 @@ typedef  enum {
 }
 @property (nonatomic, assign) id <YSSliderBarDelegate> delegate;
 @property (nonatomic, readonly) UIColor *indicatorColor;
+@property (nonatomic) int selectedIndex;
 - (void) setItems:(NSArray *) items;
 - (void) setTextColor:(UIColor *) color;
 - (void) setHighlightedTextColor:(UIColor *) color;

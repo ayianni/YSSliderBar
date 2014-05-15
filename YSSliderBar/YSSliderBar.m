@@ -78,7 +78,7 @@
 - (void) moveToItem {
     CGRect frame = [self bounds];
     
-    UIView *item = [self viewWithTag:TAG+selectedIndex];
+    UIView *item = [self viewWithTag:TAG+_selectedIndex];
     
     if (indicatorAlignment == IndicatorAlignmentFollow) {
         if (item.frame.origin.x + item.frame.size.width > frame.size.width) {
@@ -87,9 +87,9 @@
             [UIView animateWithDuration:0.3 animations:^{
                 CGFloat left = frame.size.width;
                 
-            for (int i = selectedIndex; i >= 0; i--) {
+            for (int i = _selectedIndex; i >= 0; i--) {
                 UIView *s = [self viewWithTag:TAG+i];
-                left -= s.frame.size.width + (i!=selectedIndex ? GAP : 0);
+                left -= s.frame.size.width + (i!=_selectedIndex ? GAP : 0);
                 [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
             }
             }];
@@ -101,7 +101,7 @@
             [UIView animateWithDuration:0.3 animations:^{
                 CGFloat left = 0;
                 
-                for (int i = selectedIndex; i <= [self items] - 1; i++) {
+                for (int i = _selectedIndex; i <= [self items] - 1; i++) {
                     UIView *s = [self viewWithTag:TAG+i];
                     [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
                     left += s.frame.size.width + GAP;
@@ -114,15 +114,15 @@
         [UIView animateWithDuration:0.3 animations:^{
             CGFloat left = frame.size.width/2 - item.frame.size.width/2;
             
-            for (int i = selectedIndex; i <= [self items] - 1; i++) {
+            for (int i = _selectedIndex; i <= [self items] - 1; i++) {
                 UIView *s = [self viewWithTag:TAG+i];
                 [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
-                left += s.frame.size.width + (i!=selectedIndex ? GAP : 0);
+                left += s.frame.size.width + (i!=_selectedIndex ? GAP : 0);
             }
             left = frame.size.width/2 - item.frame.size.width/2;
-            for (int i = selectedIndex-1; i >=0; i--) {
+            for (int i = _selectedIndex-1; i >=0; i--) {
                 UIView *s = [self viewWithTag:TAG+i];
-                left -= s.frame.size.width + (i!=selectedIndex ? GAP : 0);
+                left -= s.frame.size.width + (i!=_selectedIndex ? GAP : 0);
                 [s setFrame:CGRectMake(left, s.frame.origin.y, s.frame.size.width, s.frame.size.height)];
             }
         }];
@@ -131,15 +131,17 @@
     
     [self updateIndicator];
     
+    [self sendActionsForControlEvents:UIControlEventValueChanged];
+
     if (self.delegate && [self.delegate respondsToSelector:@selector(sliderBarDidChangeSelectedItem:)]) {
-          [self.delegate sliderBarDidChangeSelectedItem:selectedIndex];
+          [self.delegate sliderBarDidChangeSelectedItem:_selectedIndex];
     }
 }
 
 - (void) updateIndicator {
     CGRect frame = [self bounds];
 
-    UILabel *view = (UILabel *)[self viewWithTag:TAG+selectedIndex];
+    UILabel *view = (UILabel *)[self viewWithTag:TAG+_selectedIndex];
     CGSize size = CGSizeZero;
     CGPoint point = CGPointZero;
     switch (indicatorPlacement) {
@@ -193,12 +195,12 @@
     //NSLog(@"tap");
     
     if (self.delegate && [self.delegate respondsToSelector:@selector(sliderBarWillChangeSelectedItem:)]) {
-        [self.delegate sliderBarWillChangeSelectedItem:selectedIndex];
+        [self.delegate sliderBarWillChangeSelectedItem:_selectedIndex];
     }
     
     UIView *v = [tapRecognizer view];
     int tag = (int)v.tag - TAG;
-    selectedIndex = tag;
+    _selectedIndex = tag;
     [self moveToItem];
 }
 
@@ -212,7 +214,7 @@
     }
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
         if (self.delegate && [self.delegate respondsToSelector:@selector(sliderBarWillChangeSelectedItem:)]) {
-            [self.delegate sliderBarWillChangeSelectedItem:selectedIndex];
+            [self.delegate sliderBarWillChangeSelectedItem:_selectedIndex];
         }
 
         // check if we've panned left or right..
@@ -229,16 +231,21 @@
 #pragma mark - helper
 - (void) incrementSelectedIndex:(BOOL) increase {
     if (increase) {
-        if (selectedIndex < [self items] - 1)
-            selectedIndex++;
+        if (_selectedIndex < [self items] - 1)
+            _selectedIndex++;
     }
     else {
-        if (selectedIndex > 0)
-            selectedIndex--;
+        if (_selectedIndex > 0)
+            _selectedIndex--;
     }
 }
 
 #pragma mark - public 
+- (void) setSelectedIndex:(int)selectedIndex {
+    _selectedIndex = selectedIndex;
+    
+    [self moveToItem];
+}
 - (void) setIndicatorPlacement:(IndicatorPlacement) placement {
     indicatorPlacement = placement == IndicatorPlacementDefault ? IndicatorPlacementTop : placement;
 

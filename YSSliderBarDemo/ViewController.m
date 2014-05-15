@@ -57,6 +57,10 @@
     [abs setItems:@[@"item 1", @"item 2"]];
     [self.view addSubview:abs];
     
+    [abs setSelectedIndex:1];
+    
+    [abs addTarget:self action:@selector(sliderChanged:) forControlEvents:UIControlEventValueChanged];
+    
     
     UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(MARGIN, 250.f, frame.size.width-(MARGIN*2), 100)];
     [l setTextAlignment:NSTextAlignmentCenter];
@@ -108,5 +112,10 @@
 
 - (void) sliderBarWillChangeSelectedItem:(int)index {
     NSLog(@"SliderBarWillChangeSelectedItem: SliderBarIndex is %d", index);
+}
+
+#pragma mark - 
+- (void) sliderChanged:(id) sender {
+    NSLog(@"selected Index %d", self.sliderBarSmall.selectedIndex);
 }
 @end
