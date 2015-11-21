@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SchemeUserState</key>
+	<dict>
+		<key>Pods-YSSliderBar_Example.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-YSSliderBar_Tests.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>YSSliderBar-YSSliderBar.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>YSSliderBar.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>092FA861426EBD2C3DF38241FD699341</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1A848AB8C9A6FC184E3C5099C8D9308E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2A358CC9499A9ED7934DD8FC307169BD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2AE9226F90B54E522E7FB74838BA5123</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+</plist>

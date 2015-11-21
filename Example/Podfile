@@ -1,0 +1,12 @@
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'YSSliderBar_Example', :exclusive => true do
+  pod "YSSliderBar", :path => "../"
+end
+
+target 'YSSliderBar_Tests', :exclusive => true do
+  pod "YSSliderBar", :path => "../"
+
+  
+end

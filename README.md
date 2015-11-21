@@ -1,9 +1,15 @@
 # YSSliderBar
 
-by Alexander Yianni
+[![CI Status](http://img.shields.io/travis/Alexander Yianni/YSSliderBar.svg?style=flat)](https://travis-ci.org/Alexander Yianni/YSSliderBar)
+[![Version](https://img.shields.io/cocoapods/v/YSSliderBar.svg?style=flat)](http://cocoapods.org/pods/YSSliderBar)
+[![License](https://img.shields.io/cocoapods/l/YSSliderBar.svg?style=flat)](http://cocoapods.org/pods/YSSliderBar)
+[![Platform](https://img.shields.io/cocoapods/p/YSSliderBar.svg?style=flat)](http://cocoapods.org/pods/YSSliderBar)
 
-  * [Visit yianni-software.com.au][1]
-  * [Follow @ay23 or @YianniSoftware on Twitter][2]
+## Usage
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+## Requirements
 
 ##Purpose
 
@@ -26,8 +32,8 @@ set the placement of the Indicator with the setIndicatorPlacement method, taking
 * IndicatorPlacementBehind
 
 Set your items by passing in an array of text items.
-    [ab setItems:@[@"test1", @"test2", @"test3", @"testing one two", @"alex was here", @"'sup", @"dudes"]];
-    
+[ab setItems:@[@"test1", @"test2", @"test3", @"testing one two", @"alex was here", @"'sup", @"dudes"]];
+
 Set the colour of your indicator with:
 setIndicatorColor
 
@@ -36,5 +42,20 @@ By adhering to the YSSliderBarDelegate, you'll get two optional callbacks which 
 * sliderBarDidChangeSelectedItem
 * sliderBarWillChangeSelectedItem
 
-[1]: http://yianni-software.com.au/ "yianni software"
-[2]: http://twitter.com/ay23/ "@ay23 on Twitter"
+
+## Installation
+
+YSSliderBar is available through [CocoaPods](http://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+```ruby
+pod "YSSliderBar"
+```
+
+## Author
+
+Alexander Yianni, alex.yianni@yianni-software.com
+
+## License
+
+YSSliderBar is available under the MIT license. See the LICENSE file for more info.

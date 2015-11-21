@@ -1,0 +1,14 @@
+PODS:
+  - YSSliderBar (0.1.0)
+
+DEPENDENCIES:
+  - YSSliderBar (from `../`)
+
+EXTERNAL SOURCES:
+  YSSliderBar:
+    :path: ../
+
+SPEC CHECKSUMS:
+  YSSliderBar: 9c00e5814bbf700c9e8ec2cb99c8686a648c500e
+
+COCOAPODS: 0.39.0
